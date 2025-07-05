@@ -40,13 +40,13 @@ public:
 	bool bActivateOnPlayerProximity = false;
 	
 	/** Delay before the action activates */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mechanical|Timing")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Obstacle|Timing")
 	float ReactionDelay = 0.5f;
 	
 	FTimerHandle ReactionTimerHandle;
 
 	/** Delay before the obstacle is able to activate again. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Obstacle")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Obstacle|Timing")
 	float AutoResetActivationDelay = 0.f; // 0 means no reset
 
 	FTimerHandle ResetTimerHandle;
