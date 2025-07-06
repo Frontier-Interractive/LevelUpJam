@@ -13,10 +13,11 @@ class LEVELUPJAM_API AMovingObstacle : public AObstacle
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(EditAnywhere, Category = "Obstacle|Move")
+	/** Automatically set when calculating the movement. */
+	UPROPERTY(VisibleAnywhere, Category = "Obstacle|Move")
 	FVector StartLocation;
 
-	/** How far the door moves up */
+	/** How far the door moves up. */
 	UPROPERTY(EditAnywhere, Category = "Obstacle|Move")
 	float MoveAmount = 100.0f;
 
@@ -26,9 +27,11 @@ public:
 	
 	AMovingObstacle();
 
+	// Functions from Obstacle
 	virtual void Activate() override;
 	virtual void Deactivate() override;
-
+	virtual void SetupAutoLoop() override;
+	
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;

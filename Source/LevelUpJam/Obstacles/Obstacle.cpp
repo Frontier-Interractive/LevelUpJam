@@ -1,6 +1,7 @@
 #include "Obstacle.h"
 
 #include "Components/BoxComponent.h"
+#include "GameFramework/Character.h"
 
 // Sets default values
 AObstacle::AObstacle()
@@ -23,24 +24,42 @@ AObstacle::AObstacle()
 void AObstacle::Activate()
 {
 	OnActivated.Broadcast();
+
+	if (AutoResetDeactivationDelay > 0.0f) // Deactivate after a delay > 0
+	{
+		GetWorldTimerManager().SetTimer(DeactivationResetTimerHandle, this, &AObstacle::Deactivate, AutoResetDeactivationDelay, false);
+	}
 }
 
 void AObstacle::Deactivate()
 {
 	OnDeactivated.Broadcast();
-	
-	// Check if we should reactivate after deactivation is called.
+
 	if (AutoResetActivationDelay > 0.0f) // Reactivate after a delay > 0
 	{
-		GetWorldTimerManager().SetTimer(ResetTimerHandle, this, &AObstacle::Activate, AutoResetActivationDelay, false);
+		GetWorldTimerManager().SetTimer(ActivationResetTimerHandle, this, &AObstacle::Activate, AutoResetActivationDelay, false);
 	}
+}
+
+void AObstacle::SetupAutoLoop()
+{
+	bActivateOnStart = true;
+	AutoResetActivationDelay = 1.0f;
+	AutoResetDeactivationDelay = 1.0f;
 }
 
 // Called when the game starts or when spawned
 void AObstacle::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	if (bActivateOnStart)
+	{
+		if (AutoResetActivationDelay > 0.0f) // Reactivate after a delay > 0
+        {
+        	GetWorldTimerManager().SetTimer(ActivationResetTimerHandle, this, &AObstacle::Activate, AutoResetActivationDelay, false);
+        }
+	}
 }
 
 // Called every frame
@@ -53,9 +72,16 @@ void AObstacle::Tick(float DeltaTime)
 void AObstacle::HandleBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (bActivateOnPlayerProximity)
+	if (bActivateOnObjectProximity)
 	{
 		Activate();
+	}
+	else if (bActivateOnPlayerProximity)
+	{
+		if (const ACharacter* Character = Cast<ACharacter>(OtherActor); Character && Character->IsPlayerControlled())
+		{
+			Activate();
+		}
 	}
 }
 

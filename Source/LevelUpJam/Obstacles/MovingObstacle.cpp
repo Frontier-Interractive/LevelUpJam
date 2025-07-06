@@ -21,6 +21,14 @@ void AMovingObstacle::Deactivate()
 	Super::Deactivate(); // Broadcasts event
 }
 
+void AMovingObstacle::SetupAutoLoop()
+{
+	bActivateOnStart = true;
+	MoveSpeed = 5.0f;
+	AutoResetActivationDelay = 1.0f;
+	AutoResetDeactivationDelay = 1.0f;
+}
+
 void AMovingObstacle::BeginPlay()
 {
 	Super::BeginPlay();
@@ -33,7 +41,8 @@ void AMovingObstacle::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (!bShouldMove) return;
+	if (!bShouldMove)
+		return;
 
 	FVector CurrentLocation = Mesh->GetRelativeLocation();
 	FVector DesiredLocation = bMovingUp ? StartLocation + FVector(0, 0, MoveAmount) : StartLocation;
