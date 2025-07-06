@@ -73,3 +73,9 @@ Plugins/**/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+
+# VS Code user-specific settings
+.vscode/
+
+# User-specific override files
+*.local.*
