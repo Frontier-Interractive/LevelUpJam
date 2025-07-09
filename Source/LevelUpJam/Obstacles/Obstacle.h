@@ -30,6 +30,19 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Obstacle|Events")
 	FOnDeactivatedDelegate OnDeactivated;
+
+	// Sound to play when launch occurs
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Obstacle|Effects")
+	USoundBase* LaunchSound = nullptr;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Obstacle|Effects")
+	UParticleSystem* CascadeLaunchEffect = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Obstacle|Effects")
+	class UNiagaraSystem* NiagaraLaunchEffect = nullptr;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Obstacle|Effects")
+	bool bPlayEffectsOnActivate = true;
 	
 	// Timers 
 	/** Whether the obstacle auto-triggers activation on overlap with player. */
@@ -72,6 +85,9 @@ public:
 
 	UFUNCTION(CallInEditor, BlueprintCallable, Category = "Obstacle")
 	virtual void SetupAutoLoop();
+
+	UFUNCTION(BlueprintCallable, Category = "Obstacle|Effects")
+	virtual void PlayEffects();
 	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Obstacle")

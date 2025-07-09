@@ -13,6 +13,9 @@ void ALaunchObstacle::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// If the launch direction is not set we should launch in the same direction as the obstacle moves.
+	LaunchDirection = LaunchDirection.IsZero() ? MoveDirection : LaunchDirection;
+
 	if (Collider)
 	{
 		Collider->OnComponentBeginOverlap.AddDynamic(this, &ALaunchObstacle::OnLaunchBeginOverlap);
@@ -40,12 +43,6 @@ void ALaunchObstacle::OnLaunchBeginOverlap(UPrimitiveComponent* OverlappedComp, 
 										   UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
 										   bool bFromSweep, const FHitResult& SweepResult)
 {
-	// If the launch direction is not set we should launch in the same direction as the obstacle move.
-	if (LaunchDirection == FVector::Zero())
-	{
-		LaunchDirection = MoveDirection;
-	}
-	
 	//Launch player characters
 	if (ACharacter* Char = Cast<ACharacter>(OtherActor); Char && Char->IsPlayerControlled())
 	{
@@ -55,7 +52,8 @@ void ALaunchObstacle::OnLaunchBeginOverlap(UPrimitiveComponent* OverlappedComp, 
 	
 	if (!OtherComp || !OtherComp->IsSimulatingPhysics())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("(OnLaunchBeginOverlap) encountered actor that cannot be launched."));
+		UE_LOG(LogTemp, Warning, TEXT("LaunchObstacle: '%s' overlapped, but component '%s' does not simulate physics."),
+	   *OtherActor->GetName(), *OtherComp->GetName());
 		return;
 	}
 

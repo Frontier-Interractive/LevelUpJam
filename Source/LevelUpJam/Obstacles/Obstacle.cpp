@@ -2,6 +2,8 @@
 
 #include "Components/BoxComponent.h"
 #include "GameFramework/Character.h"
+#include "Kismet/GameplayStatics.h"
+#include "NiagaraFunctionLibrary.h"
 
 // Sets default values
 AObstacle::AObstacle()
@@ -29,6 +31,11 @@ void AObstacle::Activate()
 	{
 		GetWorldTimerManager().SetTimer(DeactivationResetTimerHandle, this, &AObstacle::Deactivate, AutoResetDeactivationDelay, false);
 	}
+
+	if (bPlayEffectsOnActivate)
+	{
+		PlayEffects();
+	}
 }
 
 void AObstacle::Deactivate()
@@ -46,6 +53,29 @@ void AObstacle::SetupAutoLoop()
 	bActivateOnStart = true;
 	AutoResetActivationDelay = 1.0f;
 	AutoResetDeactivationDelay = 1.0f;
+}
+
+void AObstacle::PlayEffects()
+{
+	FVector SpawnLocation = GetActorLocation();
+
+	// 🔊 Play sound
+	if (LaunchSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, LaunchSound, SpawnLocation);
+	}
+
+	// ✨ Play particle
+	if (CascadeLaunchEffect)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), CascadeLaunchEffect, SpawnLocation);
+	}
+
+	// 🌌 Play Niagara effect
+	if (NiagaraLaunchEffect)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), NiagaraLaunchEffect, SpawnLocation);
+	}
 }
 
 // Called when the game starts or when spawned

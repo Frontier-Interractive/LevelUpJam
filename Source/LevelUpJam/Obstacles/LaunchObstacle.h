@@ -46,6 +46,6 @@ protected:
 	UFUNCTION()
 	void OnLaunchEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 							UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
-	void ApplyLaunchToComponent(UPrimitiveComponent* PrimComp);
+	
+	virtual void ApplyLaunchToComponent(UPrimitiveComponent* PrimComp);
 };
