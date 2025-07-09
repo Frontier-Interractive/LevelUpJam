@@ -24,6 +24,10 @@ public:
 	// Door movement speed
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Obstacle|Move")
 	float MoveSpeed = 3.0f;
+
+	/** How far the door moves up. */
+	UPROPERTY(EditAnywhere, Category = "Obstacle|Move")
+	FVector MoveDirection = FVector(0,0,1);
 	
 	AMovingObstacle();
 

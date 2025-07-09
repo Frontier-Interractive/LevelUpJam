@@ -40,10 +40,16 @@ void ALaunchObstacle::OnLaunchBeginOverlap(UPrimitiveComponent* OverlappedComp, 
 										   UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
 										   bool bFromSweep, const FHitResult& SweepResult)
 {
+	// If the launch direction is not set we should launch in the same direction as the obstacle move.
+	if (LaunchDirection == FVector::Zero())
+	{
+		LaunchDirection = MoveDirection;
+	}
+	
 	//Launch player characters
 	if (ACharacter* Char = Cast<ACharacter>(OtherActor); Char && Char->IsPlayerControlled())
 	{
-		Char->LaunchCharacter(LaunchDirection * LaunchStrength, true, true);
+		Char->LaunchCharacter(LaunchDirection * LaunchStrength, false, false);
 		return;
 	}
 	

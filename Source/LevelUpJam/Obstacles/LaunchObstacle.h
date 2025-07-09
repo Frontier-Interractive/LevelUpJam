@@ -18,10 +18,10 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
-
+	
 	/** Direction of the launch force */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Obstacle|Launch")
-	FVector LaunchDirection = FVector::UpVector;
+	FVector LaunchDirection = FVector::Zero();
 
 	/** Magnitude of the launch force */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Obstacle|Launch")

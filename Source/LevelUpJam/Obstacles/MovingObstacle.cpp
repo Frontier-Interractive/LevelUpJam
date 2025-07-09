@@ -45,7 +45,7 @@ void AMovingObstacle::Tick(float DeltaTime)
 		return;
 
 	FVector CurrentLocation = Mesh->GetRelativeLocation();
-	FVector DesiredLocation = bMovingUp ? StartLocation + FVector(0, 0, MoveAmount) : StartLocation;
+	FVector DesiredLocation = bMovingUp ? StartLocation + (MoveDirection * MoveAmount) : StartLocation;
 
 	FVector NewLocation = FMath::VInterpTo(CurrentLocation, DesiredLocation, DeltaTime, MoveSpeed);
 	Mesh->SetRelativeLocation(NewLocation);
