@@ -1,5 +1,7 @@
 #include "MovingObstacle.h"
 
+#include "Components/BoxComponent.h"
+
 AMovingObstacle::AMovingObstacle()
 {
 	
@@ -34,7 +36,7 @@ void AMovingObstacle::BeginPlay()
 	Super::BeginPlay();
 
 	// Store the original position
-	StartLocation = Mesh->GetRelativeLocation();
+	StartLocation = Collider->GetRelativeLocation();
 }
 
 void AMovingObstacle::Tick(float DeltaTime)
@@ -44,16 +46,16 @@ void AMovingObstacle::Tick(float DeltaTime)
 	if (!bShouldMove)
 		return;
 
-	FVector CurrentLocation = Mesh->GetRelativeLocation();
+	FVector CurrentLocation = Collider->GetRelativeLocation();
 	FVector DesiredLocation = bMovingUp ? StartLocation + (MoveDirection * MoveAmount) : StartLocation;
 
 	FVector NewLocation = FMath::VInterpTo(CurrentLocation, DesiredLocation, DeltaTime, MoveSpeed);
-	Mesh->SetRelativeLocation(NewLocation);
+	Collider->SetRelativeLocation(NewLocation);
 
 	// Stop moving when close enough
 	if (FVector::Dist(NewLocation, DesiredLocation) < 1.0f)
 	{
-		Mesh->SetRelativeLocation(DesiredLocation);
+		Collider->SetRelativeLocation(DesiredLocation);
 		bShouldMove = false;
 	}
 }
