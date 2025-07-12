@@ -5,21 +5,23 @@
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraFunctionLibrary.h"
 
-// Sets default values
 AObstacle::AObstacle()
 {
- 	// Set this actor to call Tick() every frame. You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	RootComponent = Root;
+	
 	Collider = CreateDefaultSubobject<UBoxComponent>(TEXT("Collider"));
-	RootComponent = Collider;
 	Collider->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	Collider->SetCollisionResponseToAllChannels(ECR_Ignore);
 	Collider->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-
-	Collider->OnComponentBeginOverlap.AddDynamic(this, &AObstacle::HandleBeginOverlap);
+	Collider->SetupAttachment(RootComponent);
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	/*Mesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	Mesh->SetCollisionResponseToAllChannels(ECR_Ignore);
+	Mesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);*/
 	Mesh->SetupAttachment(Collider);
 }
 
@@ -48,21 +50,14 @@ void AObstacle::Deactivate()
 	}
 }
 
-void AObstacle::SetupAutoLoop()
-{
-	bActivateOnStart = true;
-	AutoResetActivationDelay = 1.0f;
-	AutoResetDeactivationDelay = 1.0f;
-}
-
 void AObstacle::PlayEffects()
 {
 	FVector SpawnLocation = GetActorLocation();
 
 	// 🔊 Play sound
-	if (LaunchSound)
+	if (ActivateSound)
 	{
-		UGameplayStatics::PlaySoundAtLocation(this, LaunchSound, SpawnLocation);
+		UGameplayStatics::PlaySoundAtLocation(this, ActivateSound, SpawnLocation);
 	}
 
 	// ✨ Play particle
@@ -76,27 +71,6 @@ void AObstacle::PlayEffects()
 	{
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), NiagaraLaunchEffect, SpawnLocation);
 	}
-}
-
-// Called when the game starts or when spawned
-void AObstacle::BeginPlay()
-{
-	Super::BeginPlay();
-
-	if (bActivateOnStart)
-	{
-		if (AutoResetActivationDelay > 0.0f) // Reactivate after a delay > 0
-        {
-        	GetWorldTimerManager().SetTimer(ActivationResetTimerHandle, this, &AObstacle::Activate, AutoResetActivationDelay, false);
-        }
-	}
-}
-
-// Called every frame
-void AObstacle::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
 }
 
 void AObstacle::HandleBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
@@ -115,3 +89,30 @@ void AObstacle::HandleBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* 
 	}
 }
 
+// Called when the game starts or when spawned
+void AObstacle::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (bActivateOnStart)
+	{
+		if (AutoResetActivationDelay > 0.0f) // Reactivate after a delay > 0
+		{
+			GetWorldTimerManager().SetTimer(ActivationResetTimerHandle, this, &AObstacle::Activate, AutoResetActivationDelay, false);
+		}
+	}
+}
+
+// Called every frame
+void AObstacle::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+}
+
+void AObstacle::SetupAutoLoop()
+{
+	bActivateOnStart = true;
+	AutoResetActivationDelay = 1.0f;
+	AutoResetDeactivationDelay = 1.0f;
+}

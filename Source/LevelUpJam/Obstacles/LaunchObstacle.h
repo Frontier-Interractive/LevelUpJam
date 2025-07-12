@@ -16,9 +16,6 @@ public:
 	ALaunchObstacle();
 
 protected:
-	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaTime) override;
-	
 	/** Direction of the launch force */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Obstacle|Launch")
 	FVector LaunchDirection = FVector::Zero();
@@ -35,9 +32,19 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Obstacle|Launch")
 	bool bApplyContinuousLaunch = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Obstacle|Launch")
+	TObjectPtr<class USphereComponent> TriggerComponent;
+	
 	/** Components currently overlapping */
 	TSet<UPrimitiveComponent*> OverlappingComponents;
 
+	virtual void BeginPlay() override;
+    virtual void Tick(float DeltaTime) override;
+	
+	virtual void HandleBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+	                                UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+	                                bool bFromSweep, const FHitResult& SweepResult) override;
+	
 	UFUNCTION()
 	void OnLaunchBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 							  UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,

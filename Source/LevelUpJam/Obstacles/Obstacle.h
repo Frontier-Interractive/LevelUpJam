@@ -33,7 +33,7 @@ public:
 
 	// Sound to play when launch occurs
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Obstacle|Effects")
-	USoundBase* LaunchSound = nullptr;
+	USoundBase* ActivateSound = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Obstacle|Effects")
 	UParticleSystem* CascadeLaunchEffect = nullptr;
@@ -83,24 +83,28 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Obstacle")
 	virtual void Deactivate();
 
-	UFUNCTION(CallInEditor, BlueprintCallable, Category = "Obstacle")
-	virtual void SetupAutoLoop();
-
 	UFUNCTION(BlueprintCallable, Category = "Obstacle|Effects")
 	virtual void PlayEffects();
-	
-protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Obstacle")
-	UStaticMeshComponent* Mesh;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Obstacle")
-	UBoxComponent* Collider;
-	
-	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION()
-	void HandleBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
-							UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
-							bool bFromSweep, const FHitResult& SweepResult);
+	virtual void HandleBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+									UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+									bool bFromSweep, const FHitResult& SweepResult);
+
+protected:
+
+	UPROPERTY()
+	TObjectPtr<USceneComponent> Root;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Obstacle")
+	TObjectPtr<UStaticMeshComponent> Mesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Obstacle")
+	TObjectPtr<UBoxComponent> Collider;
+
+	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
+	
+	UFUNCTION(CallInEditor, BlueprintCallable, Category = "Obstacle")
+	virtual void SetupAutoLoop();
 };
