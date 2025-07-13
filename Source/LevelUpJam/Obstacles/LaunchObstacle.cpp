@@ -50,12 +50,12 @@ void ALaunchObstacle::Tick(float DeltaTime)
 void ALaunchObstacle::HandleBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	auto test = bShouldMove;
+	if (bShouldMoveTowardsTarget == true)
+	{
+		MoveTowardsTargetActor(OtherActor);
+		LaunchDirection = MoveDirection;
+	}
 	
-	MoveDirection =  OtherActor->GetActorLocation() - GetActorLocation();
-	MoveDirection.Normalize();
-	MoveDirection.Z = 0;
-	LaunchDirection = MoveDirection;
 	Super::HandleBeginOverlap(OverlappedComp, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
 }
 

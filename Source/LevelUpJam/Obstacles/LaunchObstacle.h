@@ -13,6 +13,9 @@ class LEVELUPJAM_API ALaunchObstacle : public AMovingObstacle
 	GENERATED_BODY()
 	
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Obstacle|Launch")
+	bool bShouldMoveTowardsTarget = false;
+	
 	ALaunchObstacle();
 
 protected:

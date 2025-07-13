@@ -39,6 +39,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+	virtual void MoveTowardsTargetActor(AActor* Actor);
 
 	// Internal state flags
 	bool bMovingUp = false;

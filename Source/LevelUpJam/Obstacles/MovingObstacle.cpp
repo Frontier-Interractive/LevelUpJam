@@ -59,3 +59,10 @@ void AMovingObstacle::Tick(float DeltaTime)
 		bShouldMove = false;
 	}
 }
+
+void AMovingObstacle::MoveTowardsTargetActor(AActor* Actor)
+{
+	MoveDirection =  Actor->GetActorLocation() - GetActorLocation();
+	MoveDirection.Normalize();
+	MoveDirection.Z = 0;
+}
