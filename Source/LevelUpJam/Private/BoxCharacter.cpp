@@ -7,11 +7,13 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
+#include "RespawnPoint.h"
+#include "EngineUtils.h"
 
 // Sets default values
 ABoxCharacter::ABoxCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	// Create Spring Arm Component
@@ -37,6 +39,9 @@ ABoxCharacter::ABoxCharacter()
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
+
+	// Initialize Health
+	Health = 100.0f;
 }
 
 // Called when the game starts or when spawned
@@ -50,6 +55,19 @@ void ABoxCharacter::BeginPlay()
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
+		}
+	}
+
+	// If no respawn point is set, search for one with RespawnID "Start"
+	if (!CurrentRespawnPoint)
+	{
+		for (TActorIterator<ARespawnPoint> It(GetWorld()); It; ++It)
+		{
+			if (It->RespawnID == "Start")
+			{
+				CurrentRespawnPoint = *It;
+				break;
+			}
 		}
 	}
 }
@@ -141,4 +159,59 @@ void ABoxCharacter::MoveBackward(const FInputActionValue& Value)
 		AddMovementInput(ForwardDirection, -1.0f);
 	}
 }
+
+// Called when the character takes damage
+void ABoxCharacter::ReceiveDamage(int32 DamageAmount)
+{
+	if (Health <= 0) return;
+
+	Health -= DamageAmount;
+
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("BoxCharacter Health: %d"), Health));
+	}
+
+	if (Health <= 0)
+	{
+		Health = 0;
+		OnDeath();
+	}
+}
+
+void ABoxCharacter::OnDeath_Implementation()
+{
+	// Core C++ death logic: disable input, destroy actor, etc.
+	if (APlayerController* PC = Cast<APlayerController>(GetController()))
+	{
+		DisableInput(PC);
+	}
+	// Example: destroy the actor after a short delay
+	SetLifeSpan(2.0f);
+
+	// Call Blueprint event for respawn and effects
+	BP_OnDeath();
+}
+
+void ABoxCharacter::NotifyActorBeginOverlap(AActor* OtherActor)
+{
+    Super::NotifyActorBeginOverlap(OtherActor);
+
+    if (ARespawnPoint* Respawn = Cast<ARespawnPoint>(OtherActor))
+    {
+        FName NewID = Respawn->RespawnID;
+        FName CurrentID = CurrentRespawnPoint ? CurrentRespawnPoint->RespawnID : NAME_None;
+        if (NewID != CurrentID)
+        {
+            SetRespawnPoint(Respawn);
+            if (GEngine)
+            {
+                GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("Checkpoint reached: %s"), *NewID.ToString()));
+            }
+            // Call Blueprint logic for checkpoint update
+            BP_OnDeath(); // Or your BP respawn/update function
+        }
+    }
+}
+
 
