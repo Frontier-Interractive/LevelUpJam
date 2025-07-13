@@ -350,6 +350,9 @@ void ADrone::GrabPlayer(ABoxCharacter* Player)
 	if (Player && !CarriedPlayer)
 	{
 		CarriedPlayer = Player;
+
+		// Damage the player when captured
+		Player->ReceiveDamage(30);
 		
 		// Attach player to drone
 		Player->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
