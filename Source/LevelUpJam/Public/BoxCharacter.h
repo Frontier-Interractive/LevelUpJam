@@ -52,11 +52,21 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* JumpAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* DodgeAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	float DodgeAmount = 200;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite , Category = Input)
+	bool CanDodge = false;
+
 	// Input Functions
 	void MoveLeftRight(const FInputActionValue& Value);
 	void MoveForward(const FInputActionValue& Value);
 	void MoveBackward(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
+	void Dodge();
 
 public:	
 	// Called every frame

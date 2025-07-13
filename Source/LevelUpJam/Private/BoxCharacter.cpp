@@ -81,6 +81,9 @@ void ABoxCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		// Bind Jump Action
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+		
+		EnhancedInputComponent->BindAction(DodgeAction, ETriggerEvent::Triggered, this, &ABoxCharacter::Dodge);
+		
 	}
 }
 
@@ -111,6 +114,16 @@ void ABoxCharacter::Look(const FInputActionValue& Value)
 		// Add yaw and pitch input to controller
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(-LookAxisVector.Y);  // Negative Y to invert up/down
+	}
+}
+
+void ABoxCharacter::Dodge()
+{
+	if (CanDodge)
+	{
+		FVector targetLoc = GetActorLocation() + GetActorForwardVector() * DodgeAmount;
+	
+		SetActorLocation(targetLoc, false, nullptr, ETeleportType::TeleportPhysics);
 	}
 }
 
